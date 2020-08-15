@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import { Composite } from 'react-composite';
 import RUG from 'react-upload-gallery'
 import axios from 'axios'
-
+  
 function customRequest({ uid, file, send, action, headers, onProgress, onSuccess, onError }) {
     const form = new FormData();
 
@@ -22,7 +22,11 @@ function customRequest({ uid, file, send, action, headers, onProgress, onSuccess
             cancelToken: source.token
         }
     ).then(({ data: response }) => {
-        onSuccess(uid, response);
+        console.log(response);
+        const url = window.URL || window.webkitURL;
+        const objUrl = url.createObjectURL(response);
+        console.log(objUrl);
+        onSuccess(uid, {source: objUrl});
     })
     .catch(error => {
         onError(uid, {
@@ -45,10 +49,6 @@ const IndexPage: NextPage = () => (
         <RUG
             action="/server/segmentation" // upload route
             customRequest={customRequest}
-            source={(response) => {
-                console.log(response);
-                return response.body;
-            }}
         />
     </Composite>
 );
