@@ -17,7 +17,10 @@ function customRequest({ uid, file, send, action, headers, onProgress, onSuccess
         form,
         {
             onUploadProgress: ({ total, loaded }) => {
-                onProgress(uid, Math.round(loaded / total * 100));
+                onProgress(uid, Math.round(loaded / total * 50));
+            },
+            onDownloadProgress: ({ total, loaded }) => {
+                onProgress(uid, Math.round(50 + loaded / total * 50));
             },
             cancelToken: source.token,
             responseType: 'arraybuffer',
