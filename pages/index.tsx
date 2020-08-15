@@ -10,7 +10,7 @@ function customRequest({ uid, file, send, action, headers, onProgress, onSuccess
     form.append('image', file)
 
     const CancelToken = axios.CancelToken
-    const source = CancelToken.source()       
+    const source = CancelToken.source()
 
     axios.post(
         action,
@@ -19,11 +19,13 @@ function customRequest({ uid, file, send, action, headers, onProgress, onSuccess
             onUploadProgress: ({ total, loaded }) => {
                 onProgress(uid, Math.round(loaded / total * 100));
             },
-            cancelToken: source.token
+            cancelToken: source.token,
+            responseType: 'arraybuffer',
         }
     ).then(({ data: response }) => {
         const url = window.URL || window.webkitURL;
-        const objUrl = url.createObjectURL(response);
+        const blob = new Blob([response], { type: 'image/gif' })
+        const objUrl = url.createObjectURL(blob);
         console.log(objUrl);
         onSuccess(uid, {source: objUrl});
     })
