@@ -53,6 +53,9 @@ const IndexPage: NextPage = () => (
         <RUG
             action="/server/segmentation" // upload route
             customRequest={customRequest}
+            onConfirmDelete={(currentImage, images) => {
+                return window.confirm('Are you sure you want to delete?')
+            }}
         />
     </Composite>
 );
