@@ -22,7 +22,6 @@ function customRequest({ uid, file, send, action, headers, onProgress, onSuccess
             cancelToken: source.token
         }
     ).then(({ data: response }) => {
-        console.log(response);
         const url = window.URL || window.webkitURL;
         const objUrl = url.createObjectURL(response);
         console.log(objUrl);
