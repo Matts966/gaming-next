@@ -45,6 +45,7 @@ const IndexPage: NextPage = () => (
         <RUG
             action="/server/segmentation" // upload route
             customRequest={customRequest}
+            source={(response) => response}
         />
     </Composite>
 );
