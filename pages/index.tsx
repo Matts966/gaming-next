@@ -6,8 +6,8 @@ const IndexPage: NextPage = () => (
     <Composite>
         <h1>げーみんぐ hoge じぇねれーた</h1>
         <RUG
-            action="/segmentation" // upload route
-            source={ response => response.url }
+            action="/server/segmentation" // upload route
+            source={ response => response }
         />
     </Composite>
 );
