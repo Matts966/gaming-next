@@ -1,8 +1,8 @@
 import { NextPage } from 'next';
 import { Composite } from 'react-composite';
-import RUG from 'react-upload-gallery'
+import RUG, { DragArea, Card } from 'react-upload-gallery'
 import axios from 'axios'
-  
+
 function customRequest({ uid, file, send, action, headers, onProgress, onSuccess, onError }) {
     const form = new FormData();
 
@@ -29,8 +29,8 @@ function customRequest({ uid, file, send, action, headers, onProgress, onSuccess
         const url = window.URL || window.webkitURL;
         const blob = new Blob([response], { type: 'image/gif' })
         const objUrl = url.createObjectURL(blob);
-        console.log(objUrl);
-        onSuccess(uid, {source: objUrl});
+        alert("Gamingify success! Click image to share!")
+        onSuccess(uid, { source: objUrl });
     })
     .catch(error => {
         onError(uid, {
@@ -39,12 +39,43 @@ function customRequest({ uid, file, send, action, headers, onProgress, onSuccess
             response: error.response
         })
     })
-    
+
     return {
         abort() {
             source.cancel()
         }
     }
+}
+
+async function uploadToImgurAndOpen(image) {
+    if (!window.confirm('Share on imgur?')) {
+        return
+    }
+
+    const blob = await fetch(image.source).then(r => r.blob());              
+    const form = new FormData();
+
+    // send file
+    form.append('image', blob)
+
+    const CancelToken = axios.CancelToken
+    const source = CancelToken.source()
+
+    axios.post(
+        "https://api.imgur.com/3/image",
+        form,
+        {
+            cancelToken: source.token,
+            headers: {
+                'Authorization': 'Client-ID 4409588f10776f7',
+            },
+        }
+    ).then(({ data: response }) => {
+        const win = window.open(response.data.link, '_blank');
+        win.focus();
+    }).catch(error => {
+        alert(error)
+    })
 }
 
 const IndexPage: NextPage = () => (
@@ -56,7 +87,8 @@ const IndexPage: NextPage = () => (
             onConfirmDelete={(currentImage, images) => {
                 return window.confirm('Are you sure you want to delete?')
             }}
-        />
+            onClick={(image) => uploadToImgurAndOpen(image)}>
+        </RUG>
     </Composite>
 );
 
