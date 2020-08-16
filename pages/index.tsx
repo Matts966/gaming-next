@@ -3,6 +3,7 @@ import { Composite } from 'react-composite';
 import RUG, { DragArea, Card } from 'react-upload-gallery'
 import axios from 'axios'
 import { ToastProvider, useToasts } from 'react-toast-notifications'
+import { ResizeUtil } from '../resize_util/resize_util';
 
 async function uploadToImgurAndOpen(image, addToast) {
     if (!window.confirm('Share on imgur?')) {
@@ -44,43 +45,46 @@ function getUploadToImgurAndOpen(image, addToast) {
 
 function customRequest(addToast) {
     return ({ uid, file, send, action, headers, onProgress, onSuccess, onError }) => {
-        const form = new FormData();
-
-        // send file 
-        form.append('image', file)
-
         const CancelToken = axios.CancelToken
         const source = CancelToken.source()
 
-        axios.post(
-            action,
-            form,
-            {
-                onUploadProgress: ({ total, loaded }) => {
-                    onProgress(uid, Math.round(loaded / total * 50));
-                },
-                onDownloadProgress: ({ total, loaded }) => {
-                    onProgress(uid, Math.round(50 + loaded / total * 50));
-                },
-                cancelToken: source.token,
-                responseType: 'arraybuffer',
-            }
-        ).then(({ data: response }) => {
-            const url = window.URL || window.webkitURL;
-            const blob = new Blob([response], { type: 'image/gif' })
-            const objUrl = url.createObjectURL(blob);
-            addToast(
-                <a href="#" onClick={getUploadToImgurAndOpen({ source: objUrl }, addToast)}>
-                    Gamingify success! Click image or here to share!
-                </a>, { appearance: 'success' })
-            onSuccess(uid, { source: objUrl });
-        })
-        .catch(error => {
-            addToast(error.message, { appearance: 'error' })
-            onError(uid, {
+        const form = new FormData();
+
+        const resize_util = new ResizeUtil()
+        resize_util.compress(file, 500, (file) => {
+            // send file 
+            form.append('image', file)
+
+            axios.post(
                 action,
-                status: error.request,
-                response: error.response
+                form,
+                {
+                    onUploadProgress: ({ total, loaded }) => {
+                        onProgress(uid, Math.round(loaded / total * 50));
+                    },
+                    onDownloadProgress: ({ total, loaded }) => {
+                        onProgress(uid, Math.round(50 + loaded / total * 50));
+                    },
+                    cancelToken: source.token,
+                    responseType: 'arraybuffer',
+                }
+            ).then(({ data: response }) => {
+                const url = window.URL || window.webkitURL;
+                const blob = new Blob([response], { type: 'image/gif' })
+                const objUrl = url.createObjectURL(blob);
+                addToast(
+                    <a onClick={getUploadToImgurAndOpen({ source: objUrl }, addToast)}>
+                        Gamingify success! Click image or here to share!
+                    </a>, { appearance: 'success' })
+                onSuccess(uid, { source: objUrl });
+            })
+            .catch(error => {
+                addToast(error.message, { appearance: 'error' })
+                onError(uid, {
+                    action,
+                    status: error.request,
+                    response: error.response
+                })
             })
         })
 
