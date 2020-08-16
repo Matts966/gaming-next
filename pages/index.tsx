@@ -27,7 +27,7 @@ async function uploadToImgurAndOpen(image, addToast) {
         {
             cancelToken: source.token,
             headers: {
-                'Authorization': 'Client-ID 4409588f10776f7',
+                'Authorization': 'Client-ID 568bdee252e3d2e',
             },
         }
     ).then(({ data: response }) => {
