@@ -57,6 +57,7 @@ async function uploadToImgurAndOpen(image) {
 
     // send file
     form.append('image', blob)
+    form.append('description', "#げーみんぐhogeじぇねれーた")
 
     const CancelToken = axios.CancelToken
     const source = CancelToken.source()
