@@ -5,7 +5,7 @@ import axios from 'axios'
 import { ToastProvider, useToasts } from 'react-toast-notifications'
 import { ResizeUtil } from '../resize_util/resize_util';
 
-async function uploadToImgurAndOpen(image, addToast, uid, onProgress) {
+async function uploadToImgurAndOpen(image, addToast) {
     if (!window.confirm('Share on imgur?')) {
         return
     }
@@ -25,12 +25,6 @@ async function uploadToImgurAndOpen(image, addToast, uid, onProgress) {
         "https://api.imgur.com/3/image",
         form,
         {
-            onUploadProgress: ({ total, loaded }) => {
-                onProgress(uid, Math.round(loaded / total * 50));
-            },
-            onDownloadProgress: ({ total, loaded }) => {
-                onProgress(uid, Math.round(50 + loaded / total * 50));
-            },
             cancelToken: source.token,
             headers: {
                 'Authorization': 'Client-ID 4409588f10776f7',
@@ -43,9 +37,9 @@ async function uploadToImgurAndOpen(image, addToast, uid, onProgress) {
     })
 }
 
-function getUploadToImgurAndOpen(image, addToast, uid, onProgress) {
+function getUploadToImgurAndOpen(image, addToast) {
     return () => {
-        uploadToImgurAndOpen(image, addToast, uid, onProgress)
+        uploadToImgurAndOpen(image, addToast)
     }
 }
 
@@ -79,7 +73,7 @@ function customRequest(addToast) {
                 const blob = new Blob([response], { type: 'image/gif' })
                 const objUrl = url.createObjectURL(blob);
                 addToast(
-                    <a onClick={getUploadToImgurAndOpen({ source: objUrl }, addToast, uid, onProgress)}>
+                    <a onClick={getUploadToImgurAndOpen({ source: objUrl }, addToast)}>
                         Gamingify success! Click image or here to share!
                     </a>, { appearance: 'success' })
                 onSuccess(uid, { source: objUrl });
@@ -110,6 +104,9 @@ const RUGWithToasts = () => {
         customRequest={customRequest(addToast)}
         onConfirmDelete={(currentImage, images) => {
             return window.confirm('Are you sure you want to delete?')
+        }}
+        onClick={(image) => {
+            uploadToImgurAndOpen(image, addToast)
         }}>
     </RUG>
   }
