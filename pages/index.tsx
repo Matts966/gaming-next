@@ -80,7 +80,7 @@ function customRequest(addToast) {
                 const objUrl = url.createObjectURL(blob);
                 addToast(
                     <a onClick={getUploadToImgurAndOpen({ source: objUrl }, addToast, uid, onProgress)}>
-                        Gamingify success! Click here to share!
+                        Gamingify success! Click image or here to share!
                     </a>, { appearance: 'success' })
                 onSuccess(uid, { source: objUrl });
             })
