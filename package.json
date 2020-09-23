@@ -18,6 +18,7 @@
     "dev": "next",
     "build": "next build && next export",
     "start": "next start",
-    "fmt": "tsfmt -r"
+    "fmt": "tsfmt -r",
+    "clean": "rm -rf .next"
   }
 }
