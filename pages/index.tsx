@@ -51,7 +51,7 @@ function customRequest(addToast) {
         const form = new FormData();
 
         const resize_util = new ResizeUtil()
-        resize_util.compress(file, 80, (file) => {
+        resize_util.compress(file, 250, (file) => {
             // send file 
             form.append('image', file)
 
